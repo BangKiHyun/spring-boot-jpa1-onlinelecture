@@ -25,7 +25,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public Item findOnd(Long itemId) {
+    public Item findOne(Long itemId) {
         return itemRepository.findOne(itemId);
     }
 }
