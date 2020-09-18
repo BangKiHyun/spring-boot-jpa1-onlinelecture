@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.delivery.Delivery;

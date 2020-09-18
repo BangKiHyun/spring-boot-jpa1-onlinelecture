@@ -2,6 +2,7 @@ package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.order.Order;
 import jpabook.jpashop.domain.order.OrderSearch;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,19 @@ public class OrderRepository {
                 .setParameter("status", orderSearch.getOrderStatus())
                 .setParameter("name", orderSearch.getMemberName())
                 .setMaxResults(1000) //최대 1000건
+                .getResultList();
+    }
+
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member" + //o.member -> OneToMany, 별칭을 주어 사용하게 되면 일관성이 깨질 우려가 있음
+                        " join fetch o.delivery d", Order.class) //o.delivery -> OneToOne, 별칭을 주어 사용하게 되어도 일관성이 안깨짐
                 .getResultList();
     }
 }
