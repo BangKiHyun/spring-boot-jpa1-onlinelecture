@@ -8,6 +8,8 @@ import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.query.OrderDto;
+import jpabook.jpashop.service.query.OrderQueryService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,8 @@ public class OrderApiController {
 
     private final OrderRepository orderRepository;
     private final OrderQueryRepository orderQueryRepository;
+
+    private final OrderQueryService orderQueryService;
 
     /**
      * V1. 엔티티 직접 노출
@@ -50,10 +54,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v2/orders")
     public List<OrderDto> orderV2() {
-        List<Order> orders = orderRepository.findAll();
-        return orders.stream()
-                .map(OrderDto::new)
-                .collect(Collectors.toList());
+        return orderQueryService.orderV2();
     }
 
     /**
@@ -62,10 +63,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v3/orders")
     public List<OrderDto> orderV3() {
-        List<Order> orders = orderRepository.findAllWithItem();
-        return orders.stream()
-                .map(OrderDto::new)
-                .collect(Collectors.toList());
+        return orderQueryService.orderV3();
     }
 
     @GetMapping("/api/v3.1/orders")
@@ -104,42 +102,5 @@ public class OrderApiController {
     @GetMapping("/api/v6/orders")
     public List<OrderFlatDto> orderV6() {
         return orderQueryRepository.findAllByDto_flat();
-    }
-
-    @Getter
-    static class OrderDto {
-
-        private Long orderId;
-        private String name;
-        private LocalDateTime orderDate;
-        private OrderStatus orderStatus;
-        private Address address;
-        private List<OrderItemDto> orderItems;
-
-        public OrderDto(Order order) {
-            this.orderId = order.getId();
-            this.name = order.getMember().getName();
-            this.orderDate = order.getOrderDate();
-            this.orderStatus = order.getStatus();
-            this.address = order.getDelivery().getAddress();
-
-            orderItems = order.getOrderItems().stream()
-                    .map(OrderItemDto::new)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    @Getter
-    static class OrderItemDto {
-
-        private String itemName;
-        private int orderPrice;
-        private int count;
-
-        public OrderItemDto(OrderItem orderItem) {
-            this.itemName = orderItem.getItem().getName();
-            this.orderPrice = orderItem.getOrderPrice();
-            this.count = orderItem.getCount();
-        }
     }
 }
